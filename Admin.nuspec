@@ -9,7 +9,7 @@
     <projectUrl>https://github.com/jageall/IdentityServer.v3.MongoDb</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>MongoDb admin persistence for Thinktecture's Identityserver</description>
-    <copyright>Copyright 2014</copyright>
+    <copyright>Copyright 2014 - 2015</copyright>
     <tags>IdentityServer MongoDb</tags>
     <dependencies>
       <dependency id="IdentityServer.v3.MongoDb"
