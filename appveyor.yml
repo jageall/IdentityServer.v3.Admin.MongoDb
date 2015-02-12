@@ -1,0 +1,33 @@
+version: 1.1.0.{build}
+
+assembly_info:
+  patch: true
+  file: AssemblyInfo.*
+  assembly_version: "{version}"
+  assembly_file_version: "{version}"
+  assembly_informational_version: "{appveyor_repo_branch}"
+
+configuration: Release
+
+install:
+  - ps: .\scripts\install.ps1
+
+before_build:
+  - nuget restore source\IdentityServer.v3.MongoDb.sln
+
+build:
+  project:  Source\IdentityServer.v3.MongoDb.Admin.sln
+
+after_test: 
+  - ps: .\scripts\packagenuget.ps1
+
+artifacts: 
+  - path: '*.nupkg'
+
+deploy:
+  provider: NuGet
+  on:
+    appveyor_repo_tag: true
+  api_key: 
+    secure: k1FLU1hRZEYRxDnZ8wS99CqjVgzr2nVFLnwhpYZ0ChTSDEJ5L5yJT7DgErg7vlG/
+  artifact: /.*\.nupkg/
