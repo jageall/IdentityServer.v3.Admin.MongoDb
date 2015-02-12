@@ -13,7 +13,7 @@ install:
   - ps: .\scripts\install.ps1
 
 before_build:
-  - nuget restore source\IdentityServer.v3.MongoDb.sln
+  - nuget restore source\IdentityServer.v3.MongoDb.Admin.sln
 
 build:
   project:  Source\IdentityServer.v3.MongoDb.Admin.sln
