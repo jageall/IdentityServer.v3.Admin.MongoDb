@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0"
-         DefaultTargets="Build"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props"
-          Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -53,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdminService.cs" />
+    <Compile Include="AdminServiceFactory.cs" />
     <Compile Include="CleanUpExpiredTokens.cs" />
     <Compile Include="IAdminService.cs" />
     <Compile Include="ICleanUpExpiredTokens.cs" />
@@ -71,10 +69,7 @@
   
   -->
   <Target Name="AfterBuild">
-    <MakeDir Directories="$(SolutionDir)..\out"
-             Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
-    <Copy SourceFiles="$(TargetDir)$(TargetName)$(TargetExt)"
-          DestinationFolder="$(SolutionDir)..\out"
-          Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
+    <MakeDir Directories="$(SolutionDir)..\out" Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
+    <Copy SourceFiles="$(TargetDir)$(TargetName)$(TargetExt)" DestinationFolder="$(SolutionDir)..\out" Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
   </Target>
 </Project>

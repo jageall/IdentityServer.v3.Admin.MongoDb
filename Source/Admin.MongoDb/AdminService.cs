@@ -31,11 +31,11 @@ namespace IdentityServer.Admin.MongoDb
         private readonly ClientSerializer _clientSerializer;
         private static readonly ILog _log = LogProvider.For<AdminService>();
 
-        public AdminService(MongoDatabase db, StoreSettings settings, ClientSerializer clientSerializer)
+        public AdminService(MongoDatabase db, StoreSettings settings)
         {
             _db = db;
             _settings = settings;
-            _clientSerializer = clientSerializer;
+            _clientSerializer = new ClientSerializer();
         }
 
         public void CreateDatabase(bool expireUsingIndex = true)
