@@ -6,14 +6,14 @@
     <version>$version$</version>
     <authors>James Geall</authors>
     <owners>James Geall</owners>
-    <projectUrl>https://github.com/jageall/IdentityServer.v3.MongoDb</projectUrl>
+    <projectUrl>https://github.com/jageall/IdentityServer.v3.Admin.MongoDb</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>MongoDb admin persistence for Thinktecture's Identityserver</description>
     <copyright>Copyright 2014 - 2015</copyright>
     <tags>IdentityServer MongoDb</tags>
     <dependencies>
       <dependency id="IdentityServer.v3.MongoDb"
-                  version="1.2.0-rc" />
+                  version="1.3.0" />
     </dependencies>
   </metadata>
   <files>
