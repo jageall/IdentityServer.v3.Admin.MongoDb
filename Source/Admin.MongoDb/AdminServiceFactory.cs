@@ -8,9 +8,8 @@ namespace IdentityServer.Admin.MongoDb
         public static IAdminService Create(StoreSettings settings)
         {
             var mongoClient = new MongoClient(settings.ConnectionString);
-            var server = mongoClient.GetServer();
-            var db = server.GetDatabase(settings.Database);
-            return new AdminService(db, settings);
+            var db = mongoClient.GetDatabase(settings.Database);
+            return new AdminService(mongoClient, db, settings);
         }
     }
 }

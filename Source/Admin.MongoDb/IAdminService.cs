@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+using System.Threading.Tasks;
 using Thinktecture.IdentityServer.Core.Models;
 
-namespace IdentityServer.Core.MongoDb
+namespace IdentityServer.Admin.MongoDb
 {
     public interface IAdminService
     {
-        void CreateDatabase(bool expireUsingIndex = true);
-        void Save(Scope scope);
-        void Save(Client client);
-        void RemoveDatabase();
-        void DeleteClient(string clientId);
-        void DeleteScope(string scopeName);
+        Task CreateDatabase(bool expireUsingIndex = true);
+        Task Save(Scope scope);
+        Task Save(Client client);
+        Task RemoveDatabase();
+        Task DeleteClient(string clientId);
+        Task DeleteScope(string scopeName);
     }
 }

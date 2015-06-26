@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2014, 2015 James Geall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-using System;
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
+using MongoDB.Bson;
 
 namespace IdentityServer.Admin.MongoDb
 {
-    public interface ICleanupExpiredTokens
+    internal static class MongoCollectionExtensions
     {
-        Task CleanupAuthorizationCodes(DateTime removeTokensBefore);
-        Task CleanupTokenHandles(DateTime removeTokensBefore);
-        Task CleanupRefreshTokens(DateTime removeTokensBefore);
+        public static bool CollectionExists(this List<BsonDocument> docs,  string name)
+        {
+            return docs.All(x =>x.Contains("name") &&  x["name"].IsString && x["name"].AsString != name);
+        }
     }
 }

@@ -13,39 +13,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
-using MongoDB.Driver;
-using MongoDB.Driver.Builders;
 
-namespace IdentityServer.Core.MongoDb
+using System;
+using System.Threading.Tasks;
+using IdentityServer.Core.MongoDb;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using Thinktecture.IdentityServer.Core.Logging;
+
+namespace IdentityServer.Admin.MongoDb
 {
     class CleanupExpiredTokens : ICleanupExpiredTokens
     {
-        private readonly MongoDatabase _db;
+        private readonly IMongoDatabase _db;
         private readonly StoreSettings _settings;
-
-        public CleanupExpiredTokens(MongoDatabase db, StoreSettings settings)
+        private static readonly ILog _log = LogProvider.For<CleanupExpiredTokens>();
+        public CleanupExpiredTokens(IMongoDatabase db, StoreSettings settings)
         {
             _db = db;
             _settings = settings;
         }
 
-        public void CleanupAuthorizationCodes(DateTime removeTokensBefore)
+        public async Task CleanupAuthorizationCodes(DateTime removeTokensBefore)
         {
-            var collection = _db.GetCollection(_settings.AuthorizationCodeCollection);
-            collection.Remove(Query.LT("_expires", removeTokensBefore));
+            var collection = _db.GetCollection<BsonDocument>(_settings.AuthorizationCodeCollection);
+            var result = await collection.DeleteManyAsync(Builders<BsonDocument>.Filter.Lt("_expires", removeTokensBefore));
+            _log.Debug(result.ToString);
         }
 
-        public void CleanupTokenHandles(DateTime removeTokensBefore)
+        public async Task CleanupTokenHandles(DateTime removeTokensBefore)
         {
-            var collection = _db.GetCollection(_settings.TokenHandleCollection);
-            collection.Remove(Query.LT("_expires", removeTokensBefore));
+            var collection = _db.GetCollection<BsonDocument>(_settings.TokenHandleCollection);
+            var result = await collection.DeleteManyAsync(Builders<BsonDocument>.Filter.Lt("_expires", removeTokensBefore));
+            _log.Debug(result.ToString);
         }
 
-        public void CleanupRefreshTokens(DateTime removeTokensBefore)
+        public async Task CleanupRefreshTokens(DateTime removeTokensBefore)
         {
-            var collection = _db.GetCollection(_settings.RefreshTokenCollection);
-            collection.Remove(Query.LT("_expires", removeTokensBefore));
+            var collection = _db.GetCollection<BsonDocument>(_settings.RefreshTokenCollection);
+            var result = await collection.DeleteManyAsync(Builders<BsonDocument>.Filter.Lt("_expires", removeTokensBefore));
+            _log.Debug(result.ToString);
         }
     }
 }

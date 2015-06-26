@@ -14,50 +14,53 @@
  * limitations under the License.
  */
 using System;
+using System.Threading.Tasks;
 using IdentityServer.Core.MongoDb;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using MongoDB.Driver.Builders;
-using MongoDB.Driver.Wrappers;
 using Thinktecture.IdentityServer.Core.Logging;
 using Thinktecture.IdentityServer.Core.Models;
-
+using Builder = MongoDB.Driver.Builders<MongoDB.Bson.BsonDocument>;
 namespace IdentityServer.Admin.MongoDb
 {
     internal class AdminService : IAdminService
     {
-        private readonly MongoDatabase _db;
+        private readonly IMongoClient _client;
+        private readonly IMongoDatabase _db;
         private readonly StoreSettings _settings;
         private readonly ClientSerializer _clientSerializer;
         private static readonly ILog _log = LogProvider.For<AdminService>();
 
-        public AdminService(MongoDatabase db, StoreSettings settings)
+        public AdminService(IMongoClient client, IMongoDatabase db, StoreSettings settings)
         {
+            _client = client;
             _db = db;
             _settings = settings;
             _clientSerializer = new ClientSerializer();
         }
 
-        public void CreateDatabase(bool expireUsingIndex = true)
+        public async Task CreateDatabase(bool expireUsingIndex = true)
         {
+            var cursor = await _db.ListCollectionsAsync();
+            var list = await cursor.ToListAsync();
 
-            if (!_db.CollectionExists(_settings.ClientCollection))
+            if (list.CollectionExists(_settings.ClientCollection))
             {
-                var result = _db.CreateCollection(_settings.ClientCollection);
-                _log.Debug(result.Response.ToString);
+                await _db.CreateCollectionAsync(_settings.ClientCollection);
             }
-            if (!_db.CollectionExists(_settings.ScopeCollection))
+            if (!list.CollectionExists(_settings.ScopeCollection))
             {
-                var result = _db.CreateCollection(_settings.ScopeCollection);
-                _log.Debug(result.Response.ToString);
+                await _db.CreateCollectionAsync(_settings.ScopeCollection);
             }
-            if (!_db.CollectionExists(_settings.ConsentCollection))
+            if (!list.CollectionExists(_settings.ConsentCollection))
             {
-                MongoCollection<BsonDocument> collection = _db.GetCollection(_settings.ConsentCollection);
-                var result = collection.CreateIndex("subject");
-                _log.Debug(result.Response.ToString);
-                result = collection.CreateIndex("clientId", "subject");
-                _log.Debug(result.Response.ToString);
+                var collection = _db.GetCollection<BsonDocument>(_settings.ConsentCollection);
+
+                await collection.Indexes.CreateOneAsync("subject");
+
+
+                await collection.Indexes.CreateOneAsync(Builder.IndexKeys.Combine("clientId", "subject"));
+
             }
 
             var tokenCollections = new[]
@@ -69,65 +72,67 @@ namespace IdentityServer.Admin.MongoDb
 
             foreach (string tokenCollection in tokenCollections)
             {
-                var options = new IndexOptionsBuilder();
-                var keys = new IndexKeysBuilder();
-                keys.Ascending("_expires");
-                if (expireUsingIndex)
-                {
-                    options.SetTimeToLive(TimeSpan.FromSeconds(1));
-                }
-                MongoCollection<BsonDocument> collection = _db.GetCollection(tokenCollection);
+                IMongoCollection<BsonDocument> collection = _db.GetCollection<BsonDocument>(tokenCollection);
+                var options = new CreateIndexOptions() {ExpireAfter = TimeSpan.FromSeconds(1)};
                 
-                var result = collection.CreateIndex("_clientId", "_subjectId");
-                _log.Debug(result.Response.ToString);
+
+                await collection.Indexes.CreateOneAsync(Builder.IndexKeys.Combine("_clientId", "_subjectId"));
                 
-                result = collection.CreateIndex("_subjectId");
-                _log.Debug(result.Response.ToString);
                 try
                 {
-                    result = collection.CreateIndex(keys, options);
-                    _log.Debug(result.Response.ToString);
-                } catch (MongoWriteConcernException)
+                    await collection.Indexes.CreateOneAsync(Builder.IndexKeys
+                        .Ascending("_expires"),
+                        options);
+                }
+                catch (MongoWriteConcernException)
                 {
-                    var cr = collection.DropIndex("_expires");
-                    _log.Debug(cr.Response.ToString);
-                    result = collection.CreateIndex(keys, options);
-                    _log.Debug(result.Response.ToString);
+                    await collection.Indexes.DropOneAsync("_expires");
+                    await collection.Indexes.CreateOneAsync(Builder.IndexKeys
+                    .Ascending("_expires"),
+                    options);
                 }
             }
         }
 
-        public void Save(Scope scope)
+
+
+        public async Task Save(Scope scope)
         {
             BsonDocument doc = new ScopeSerializer().Serialize(scope);
-            MongoCollection<BsonDocument> collection = _db.GetCollection(_settings.ScopeCollection);
-            var result = collection.Save(doc);
-            _log.Debug(result.Response.ToString);
+            IMongoCollection<BsonDocument> collection = _db.GetCollection<BsonDocument>(_settings.ScopeCollection);
+            var result = await collection.ReplaceOneAsync(Filter.ById(scope.Name), doc, new UpdateOptions() {IsUpsert = true} );
+            _log.Debug(result.ToString);
         }
 
-        public void Save(Client client)
+        public async Task Save(Client client)
         {
             BsonDocument doc = _clientSerializer.Serialize(client);
-            MongoCollection<BsonDocument> collection = _db.GetCollection(_settings.ClientCollection);
-            var result = collection.Save(doc);
-            _log.Debug(result.Response.ToString);
+            IMongoCollection<BsonDocument> collection = _db.GetCollection<BsonDocument>(_settings.ClientCollection);
+            var result = await collection.ReplaceOneAsync(
+                Filter.ById(client.ClientId), 
+                doc,
+                new UpdateOptions() { IsUpsert = true}
+                );
+            _log.Debug(result.ToString);
         }
 
-        public void RemoveDatabase()
+        public async Task RemoveDatabase()
         {
-            _db.Drop();
+            await _client.DropDatabaseAsync(_settings.Database);
         }
 
-        public void DeleteClient(string clientId)
+        public async Task DeleteClient(string clientId)
         {
-            MongoCollection<BsonDocument> collection = _db.GetCollection(_settings.ClientCollection);
-            collection.Remove(new QueryWrapper(new{_id = clientId}));
+            IMongoCollection<BsonDocument> collection = _db.GetCollection<BsonDocument>(_settings.ClientCollection);
+            var result = await collection.DeleteOneByIdAsync(clientId);
+            _log.Debug(result.ToString);
         }
 
-        public void DeleteScope(string scopeName)
+        public async Task DeleteScope(string scopeName)
         {
-            MongoCollection<BsonDocument> collection = _db.GetCollection(_settings.ScopeCollection);
-            collection.Remove(new QueryWrapper(new { _id = scopeName}));
+            IMongoCollection<BsonDocument> collection = _db.GetCollection<BsonDocument> (_settings.ScopeCollection);
+            var result = await collection.DeleteOneByIdAsync(scopeName );
+            _log.Debug(result.ToString);
         }
     }
 }
