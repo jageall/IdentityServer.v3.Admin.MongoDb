@@ -10,13 +10,14 @@ assembly_info:
 configuration: Release
 
 install:
+  - set PATH=C:\Program Files (x86)\MSBuild\14.0\Bin;%PATH%
   - ps: .\scripts\install.ps1
 
 before_build:
   - nuget restore source\IdentityServer.v3.MongoDb.Admin.sln
 
-build_script:
-  - "C:\Program Files (x86)\MSBuild\14.0\bin\msbuild.exe" "Source\\IdentityServer.v3.MongoDb.Admin.sln" /verbosity:normal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+build:
+  project:  Source\IdentityServer.v3.MongoDb.Admin.sln
 
 after_test: 
   - ps: .\scripts\packagenuget.ps1
