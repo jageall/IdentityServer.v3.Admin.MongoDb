@@ -15,8 +15,8 @@ install:
 before_build:
   - nuget restore source\IdentityServer.v3.MongoDb.Admin.sln
 
-build:
-  project:  Source\IdentityServer.v3.MongoDb.Admin.sln
+build_script:
+  - "C:\Program Files (x86)\MSBuild\14.0\bin\msbuild.exe" "Source\IdentityServer.v3.MongoDb.Admin.sln" /verbosity:normal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
 after_test: 
   - ps: .\scripts\packagenuget.ps1
