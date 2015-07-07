@@ -74,9 +74,10 @@ namespace IdentityServer.Admin.MongoDb
             {
                 IMongoCollection<BsonDocument> collection = _db.GetCollection<BsonDocument>(tokenCollection);
                 var options = new CreateIndexOptions() {ExpireAfter = TimeSpan.FromSeconds(1)};
-                
 
-                await collection.Indexes.CreateOneAsync(Builder.IndexKeys.Combine("_clientId", "_subjectId"));
+
+                await collection.Indexes.CreateOneAsync(Builder.IndexKeys.Combine(
+                    Builder.IndexKeys.Ascending("_clientId"), Builder.IndexKeys.Ascending("_subjectId")));
                 
                 try
                 {
@@ -93,8 +94,6 @@ namespace IdentityServer.Admin.MongoDb
                 }
             }
         }
-
-
 
         public async Task Save(Scope scope)
         {
