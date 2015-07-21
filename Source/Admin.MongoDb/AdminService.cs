@@ -44,7 +44,7 @@ namespace IdentityServer.Admin.MongoDb
             var cursor = await _db.ListCollectionsAsync();
             var list = await cursor.ToListAsync();
 
-            if (list.CollectionExists(_settings.ClientCollection))
+            if (!list.CollectionExists(_settings.ClientCollection))
             {
                 await _db.CreateCollectionAsync(_settings.ClientCollection);
             }
@@ -56,10 +56,11 @@ namespace IdentityServer.Admin.MongoDb
             {
                 var collection = _db.GetCollection<BsonDocument>(_settings.ConsentCollection);
 
-                await collection.Indexes.CreateOneAsync("subject");
+                await collection.Indexes.CreateOneAsync(Builder.IndexKeys.Ascending("subject"));
 
 
-                await collection.Indexes.CreateOneAsync(Builder.IndexKeys.Combine("clientId", "subject"));
+                await collection.Indexes.CreateOneAsync(Builder.IndexKeys.Combine(
+                    Builder.IndexKeys.Ascending("clientId"), Builder.IndexKeys.Ascending("subject")));
 
             }
 
