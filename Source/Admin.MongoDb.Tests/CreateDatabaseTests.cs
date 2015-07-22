@@ -161,7 +161,7 @@ namespace Admin.MongoDb.Tests
 
         public void Dispose()
         {
-            Task.Run(_client.DropDatabaseAsync(_settings.Database).Wait()).Wait();
+            Task.Run(() => _client.DropDatabaseAsync(_settings.Database).Wait()).Wait();
         }
     }
 }
