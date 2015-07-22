@@ -15,20 +15,21 @@ namespace Admin.MongoDb.Tests
     {
         private readonly StoreSettings _settings;
         private readonly MongoClient _client;
-
+	Task _setup;
 
         public CreateDatabaseTests()
         {
             _settings = StoreSettings.DefaultSettings();
             _settings.Database = Guid.NewGuid().ToString();
             var service = AdminServiceFactory.Create(_settings);
-            service.CreateDatabase().Wait();
+            _setup = service.CreateDatabase();
             _client = new MongoClient(_settings.ConnectionString);
         }
 
         [Fact]
         public async Task ShouldCreateDatabase()
         {
+            await _setup;
             var cursor = await _client.ListDatabasesAsync();
             var list = await cursor.ToListAsync();
             Assert.Contains(list, x=>x["name"] == _settings.Database);
@@ -37,6 +38,7 @@ namespace Admin.MongoDb.Tests
         [Fact]
         public async Task ShouldCreateClientCollection()
         {
+            await _setup;
             var db = _client.GetDatabase(_settings.Database);
             var cursor = await db.ListCollectionsAsync();
             var list = await cursor.ToListAsync();
@@ -54,6 +56,7 @@ namespace Admin.MongoDb.Tests
         [Fact]
         public async Task ShouldCreateScopeCollection()
         {
+            await _setup;
             var db = _client.GetDatabase(_settings.Database);
             var cursor = await db.ListCollectionsAsync();
             var list = await cursor.ToListAsync();
@@ -70,6 +73,7 @@ namespace Admin.MongoDb.Tests
         [Fact]
         public async Task ShouldCreateConsentCollection()
         {
+            await _setup;
             var db = _client.GetDatabase(_settings.Database);
             var cursor = await db.ListCollectionsAsync();
             var list = await cursor.ToListAsync();
@@ -92,6 +96,7 @@ namespace Admin.MongoDb.Tests
         [Fact]
         public async Task ShouldCreateAuthorizationCodeCollection()
         {
+            await _setup;
             var db = _client.GetDatabase(_settings.Database);
             var cursor = await db.ListCollectionsAsync();
             var list = await cursor.ToListAsync();
@@ -105,6 +110,7 @@ namespace Admin.MongoDb.Tests
         [Fact]
         public async Task ShouldCreateRefreshTokenCollection()
         {
+            await _setup;
             var db = _client.GetDatabase(_settings.Database);
             var cursor = await db.ListCollectionsAsync();
             var list = await cursor.ToListAsync();
@@ -117,6 +123,7 @@ namespace Admin.MongoDb.Tests
         [Fact]
         public async Task ShouldCreateTokenHandleCollection()
         {
+            await _setup;
             var db = _client.GetDatabase(_settings.Database);
             var cursor = await db.ListCollectionsAsync();
             var list = await cursor.ToListAsync();
@@ -154,7 +161,7 @@ namespace Admin.MongoDb.Tests
 
         public void Dispose()
         {
-            _client.DropDatabaseAsync(_settings.Database).Wait();
+            Task.Run(_client.DropDatabaseAsync(_settings.Database).Wait()).Wait();
         }
     }
 }
