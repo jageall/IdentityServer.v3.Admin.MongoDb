@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <metadata>
-    <id>IdentityServer.v3.MongoDb.Admin</id>
+    <id>IdentityServer3.MongoDb.Admin</id>
     <title>IdentityServer3 Mongo Admin Persistence</title>
     <version>$version$</version>
     <authors>James Geall</authors>
@@ -17,6 +17,6 @@
     </dependencies>
   </metadata>
   <files>
-      <file src="Out\IdentityServer.v3.Admin.MongoDb.dll" target="lib\net45"/>
+      <file src="Out\IdentityServer3.Admin.MongoDb.dll" target="lib\net45"/>
     </files>
 </package>
