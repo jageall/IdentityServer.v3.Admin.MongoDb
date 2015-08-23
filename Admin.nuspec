@@ -12,8 +12,8 @@
     <copyright>Copyright 2014 - 2015</copyright>
     <tags>IdentityServer MongoDb</tags>
     <dependencies>
-      <dependency id="IdentityServer.v3.MongoDb"
-                  version="1.6.1" />
+      <dependency id="IdentityServer3.MongoDb"
+                  version="2.0.0" />
     </dependencies>
   </metadata>
   <files>

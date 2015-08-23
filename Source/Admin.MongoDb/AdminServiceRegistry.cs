@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using IdentityServer.Core.MongoDb;
-using Thinktecture.IdentityServer.Core.Configuration;
+
+using IdentityServer3.Admin.MongoDb;
+using IdentityServer3.Core.Configuration;
 
 namespace IdentityServer.Admin.MongoDb
 {

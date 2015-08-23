@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 using System;
 using System.Threading.Tasks;
-using IdentityServer.Core.MongoDb;
+using IdentityServer3.Core.Models;
+using IdentityServer3.MongoDb;
+using IdentityServer3.MongoDb.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using Thinktecture.IdentityServer.Core.Logging;
-using Thinktecture.IdentityServer.Core.Models;
 using Builder = MongoDB.Driver.Builders<MongoDB.Bson.BsonDocument>;
-namespace IdentityServer.Admin.MongoDb
+
+namespace IdentityServer3.Admin.MongoDb
 {
     internal class AdminService : IAdminService
     {
@@ -29,7 +31,6 @@ namespace IdentityServer.Admin.MongoDb
         private readonly IMongoDatabase _db;
         private readonly StoreSettings _settings;
         private readonly ClientSerializer _clientSerializer;
-        private static readonly ILog _log = LogProvider.For<AdminService>();
 
         public AdminService(IMongoClient client, IMongoDatabase db, StoreSettings settings)
         {
@@ -71,9 +72,9 @@ namespace IdentityServer.Admin.MongoDb
                 _settings.TokenHandleCollection
             };
 
-            foreach (string tokenCollection in tokenCollections)
+            foreach (var tokenCollection in tokenCollections)
             {
-                IMongoCollection<BsonDocument> collection = _db.GetCollection<BsonDocument>(tokenCollection);
+                var collection = _db.GetCollection<BsonDocument>(tokenCollection);
                 var options = new CreateIndexOptions() {ExpireAfter = TimeSpan.FromSeconds(1)};
 
 
@@ -98,22 +99,20 @@ namespace IdentityServer.Admin.MongoDb
 
         public async Task Save(Scope scope)
         {
-            BsonDocument doc = new ScopeSerializer().Serialize(scope);
-            IMongoCollection<BsonDocument> collection = _db.GetCollection<BsonDocument>(_settings.ScopeCollection);
-            var result = await collection.ReplaceOneAsync(Filter.ById(scope.Name), doc, new UpdateOptions() {IsUpsert = true} );
-            _log.Debug(result.ToString);
+            var doc = new ScopeSerializer().Serialize(scope);
+            var collection = _db.GetCollection<BsonDocument>(_settings.ScopeCollection);
+            await collection.ReplaceOneAsync(Filter.ById(scope.Name), doc, new UpdateOptions() {IsUpsert = true} );
         }
 
         public async Task Save(Client client)
         {
-            BsonDocument doc = _clientSerializer.Serialize(client);
-            IMongoCollection<BsonDocument> collection = _db.GetCollection<BsonDocument>(_settings.ClientCollection);
-            var result = await collection.ReplaceOneAsync(
+            var doc = _clientSerializer.Serialize(client);
+            var collection = _db.GetCollection<BsonDocument>(_settings.ClientCollection);
+            await collection.ReplaceOneAsync(
                 Filter.ById(client.ClientId), 
                 doc,
                 new UpdateOptions() { IsUpsert = true}
                 );
-            _log.Debug(result.ToString);
         }
 
         public async Task RemoveDatabase()
@@ -123,16 +122,14 @@ namespace IdentityServer.Admin.MongoDb
 
         public async Task DeleteClient(string clientId)
         {
-            IMongoCollection<BsonDocument> collection = _db.GetCollection<BsonDocument>(_settings.ClientCollection);
-            var result = await collection.DeleteOneByIdAsync(clientId);
-            _log.Debug(result.ToString);
+            var collection = _db.GetCollection<BsonDocument>(_settings.ClientCollection);
+            await collection.DeleteOneByIdAsync(clientId);
         }
 
         public async Task DeleteScope(string scopeName)
         {
-            IMongoCollection<BsonDocument> collection = _db.GetCollection<BsonDocument> (_settings.ScopeCollection);
-            var result = await collection.DeleteOneByIdAsync(scopeName );
-            _log.Debug(result.ToString);
+            var collection = _db.GetCollection<BsonDocument> (_settings.ScopeCollection);
+            await collection.DeleteOneByIdAsync(scopeName );
         }
     }
 }

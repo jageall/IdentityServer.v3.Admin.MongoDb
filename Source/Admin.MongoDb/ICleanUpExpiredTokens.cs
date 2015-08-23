@@ -17,7 +17,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace IdentityServer.Admin.MongoDb
+namespace IdentityServer3.Admin.MongoDb
 {
     public interface ICleanupExpiredTokens
     {

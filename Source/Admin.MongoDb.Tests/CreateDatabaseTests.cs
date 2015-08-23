@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using IdentityServer.Admin.MongoDb;
-using IdentityServer.Core.MongoDb;
+using IdentityServer3.MongoDb;
+using IdentityServer3.Admin.MongoDb;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Xunit;

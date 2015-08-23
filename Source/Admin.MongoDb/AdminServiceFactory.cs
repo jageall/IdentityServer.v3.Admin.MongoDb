@@ -1,7 +1,7 @@
-﻿using IdentityServer.Core.MongoDb;
+﻿using IdentityServer3.MongoDb;
 using MongoDB.Driver;
 
-namespace IdentityServer.Admin.MongoDb
+namespace IdentityServer3.Admin.MongoDb
 {
     public static class AdminServiceFactory
     {

@@ -15,9 +15,9 @@
  */
 
 using System.Threading.Tasks;
-using Thinktecture.IdentityServer.Core.Models;
+using IdentityServer3.Core.Models;
 
-namespace IdentityServer.Admin.MongoDb
+namespace IdentityServer3.Admin.MongoDb
 {
     public interface IAdminService
     {
