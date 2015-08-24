@@ -24,7 +24,7 @@ namespace IdentityServer3.Admin.MongoDb
     {
         public static bool CollectionExists(this List<BsonDocument> docs,  string name)
         {
-            return docs.Count > 0 && docs.All(x =>x.Contains("name") &&  x["name"].IsString && x["name"].AsString == name);
+            return docs.Count > 0 && docs.Any(x =>x.Contains("name") &&  x["name"].IsString && x["name"].AsString == name);
         }
     }
 }

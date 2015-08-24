@@ -14,14 +14,15 @@ namespace Admin.MongoDb.Tests
     {
         private readonly StoreSettings _settings;
         private readonly MongoClient _client;
-	Task _setup;
+        readonly Task _setup;
+        private IAdminService _service;
 
         public CreateDatabaseTests()
         {
             _settings = StoreSettings.DefaultSettings();
             _settings.Database = Guid.NewGuid().ToString();
-            var service = AdminServiceFactory.Create(_settings);
-            _setup = service.CreateDatabase();
+            _service = AdminServiceFactory.Create(_settings);
+            _setup = _service.CreateDatabase();
             _client = new MongoClient(_settings.ConnectionString);
         }
 
@@ -156,6 +157,14 @@ namespace Admin.MongoDb.Tests
                 }
                 return false;
             });
+        }
+
+        [Fact]
+        public async Task ShouldBeAbleToRunCreateDatabaseMultipleTimes()
+        {
+            await _service.CreateDatabase();
+            await _service.CreateDatabase();
+            await _service.CreateDatabase();
         }
 
         public void Dispose()
