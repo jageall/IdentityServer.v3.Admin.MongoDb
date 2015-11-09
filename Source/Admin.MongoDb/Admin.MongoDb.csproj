@@ -30,12 +30,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="IdentityServer3, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\IdentityServer3.2.0.0\lib\net45\IdentityServer3.dll</HintPath>
+    <Reference Include="IdentityServer3, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\IdentityServer3.2.1.1\lib\net45\IdentityServer3.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="IdentityServer3.MongoDb, Version=2.0.0.133, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\IdentityServer3.MongoDb.2.0.0\lib\net45\IdentityServer3.MongoDb.dll</HintPath>
+    <Reference Include="IdentityServer3.MongoDb, Version=2.0.1.137, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\IdentityServer3.MongoDb.2.0.1\lib\net45\IdentityServer3.MongoDb.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
